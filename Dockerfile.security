@@ -1,0 +1,39 @@
+# Use Iron Bank Python 3.9 STIG base image as the foundation
+FROM registry1.dso.mil/ironbank/opensource/python39-stig-venv:v3.9
+
+USER root
+
+# Update packages and install dependencies
+RUN dnf -y update && \
+    dnf install -y --allowerasing \
+      curl \
+      ca-certificates \
+      git \
+      perl \
+      python3-pip \
+      sudo && \
+    dnf clean all
+
+# Install Syft
+RUN curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
+
+# Install Trivy 
+RUN curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v0.61.1
+
+# Install Gitleaks 
+RUN curl -sL https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks-linux-amd64 -o /usr/local/bin/gitleaks && \
+    chmod +x /usr/local/bin/gitleaks
+
+# Install Checkov
+RUN pip3 install checkov
+
+# Install Semgrep 
+RUN pip3 install semgrep
+
+# Install Nikto
+RUN git clone https://github.com/sullo/nikto.git /opt/nikto && \
+    chmod +x /opt/nikto/program/nikto.pl
+
+WORKDIR /app
+
+CMD [ "bash" ]
