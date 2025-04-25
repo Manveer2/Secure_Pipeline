@@ -1,6 +1,6 @@
 pipeline {
     agent {
-        docker {
+        dockerContainer {
             image 'my-secure-sdlc-security-tools:latest' 
             args '-u root' 
         }
